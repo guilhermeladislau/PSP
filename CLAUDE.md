@@ -64,24 +64,35 @@ Fora do MVP: marcas (Open Food Facts), metas de macros, histórico semanal, favo
 - JDK instalado: 27 (o `pom.xml` usa `java.version` 25; compila normalmente).
 - Docker ativo e usuário no grupo `docker`. Se aparecer `permission denied ... /var/run/docker.sock`, a sessão foi aberta antes de entrar no grupo: faça logout/login (ou `newgrp docker` no terminal atual). Conferir com `id` (deve listar `docker`) e `docker info`.
 
+### Banco local (raiz do repositório)
+
+```bash
+cp .env.example .env   # uma vez; troque DB_PASSWORD (o .env nunca é commitado)
+docker compose up -d --wait   # PostgreSQL 18.6, só em 127.0.0.1:5432
+docker compose down           # para o banco e mantém os dados (volume postgres-data)
+```
+
+A versão da imagem (`postgres:18.6`) aparece em `compose.yaml` e em `TestcontainersConfiguration.java`. Atualize as duas juntas.
+
 ### Backend (`backend/`)
 
 Rodar sempre de dentro de `backend/`, usando o wrapper (`./mvnw`), nunca um Maven global.
 
 ```bash
 cd backend
-./mvnw test        # testes; sobe PostgreSQL real via Testcontainers (exige Docker)
-./mvnw verify      # build completo com testes
+./mvnw test              # testes; sobe PostgreSQL real via Testcontainers (exige Docker, não usa o .env)
+./mvnw verify            # build completo com testes
+./mvnw spring-boot:run   # roda local; exige o banco do Compose no ar; lê ../.env
+curl localhost:8080/actuator/health   # deve responder {"status":"UP",...}
 ```
 
-Validado em 2026-10-17: `./mvnw test` passa (contexto Spring sobe com PostgreSQL 18.6 via Testcontainers).
+Validado em 2026-10-17: `./mvnw test` passa sem `.env`, e `spring-boot:run` conecta no banco do Compose com health `UP`.
 
 ### Ainda não existem
 
-- **Banco local via Docker Compose:** previsto na ADR 001, ainda sem `compose.yaml`.
-- **Rodar o backend localmente:** depende do banco acima (ou de usar `TestBackendApplication` com Testcontainers; ainda não validado).
 - **Frontend e ferramentas Python:** ainda não criados.
 - **Formatação e análise estática:** ainda não configuradas no build.
+- **CI:** ainda não configurada.
 
 ### Avisos conhecidos (não bloqueiam)
 
