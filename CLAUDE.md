@@ -88,10 +88,22 @@ curl localhost:8080/actuator/health   # deve responder {"status":"UP",...}
 
 Validado em 2026-10-17: `./mvnw test` passa sem `.env`, e `spring-boot:run` conecta no banco do Compose com health `UP`.
 
+### Frontend (`frontend/`)
+
+Rodar sempre de dentro de `frontend/`.
+
+```bash
+cd frontend
+npm install       # instala dependências
+npm run dev       # roda servidor de desenvolvimento em http://localhost:5173 (com proxy para http://localhost:8080/api)
+npm run lint      # análise estática com Oxlint
+npm run build     # compilação TypeScript (tsc -b) e build otimizado com Vite
+```
+
 ### Ainda não existem
 
-- **Frontend e ferramentas Python:** ainda não criados.
-- **Formatação e análise estática:** ainda não configuradas no build.
+- **Ferramentas Python:** ainda não criadas.
+- **Formatação e análise estática do backend:** ainda não configuradas no build.
 - **CI:** ainda não configurada.
 
 ### Avisos conhecidos (não bloqueiam)
