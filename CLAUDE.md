@@ -59,7 +59,34 @@ Fora do MVP: marcas (Open Food Facts), metas de macros, histórico semanal, favo
 
 ## Comandos úteis
 
-[Preencher quando existirem: como subir o banco, rodar o backend, o frontend e os testes.]
+### Pré-requisitos do ambiente
+
+- JDK instalado: 27 (o `pom.xml` usa `java.version` 25; compila normalmente).
+- Docker ativo e usuário no grupo `docker`. Se aparecer `permission denied ... /var/run/docker.sock`, a sessão foi aberta antes de entrar no grupo: faça logout/login (ou `newgrp docker` no terminal atual). Conferir com `id` (deve listar `docker`) e `docker info`.
+
+### Backend (`backend/`)
+
+Rodar sempre de dentro de `backend/`, usando o wrapper (`./mvnw`), nunca um Maven global.
+
+```bash
+cd backend
+./mvnw test        # testes; sobe PostgreSQL real via Testcontainers (exige Docker)
+./mvnw verify      # build completo com testes
+```
+
+Validado em 2026-10-17: `./mvnw test` passa (contexto Spring sobe com PostgreSQL 18.6 via Testcontainers).
+
+### Ainda não existem
+
+- **Banco local via Docker Compose:** previsto na ADR 001, ainda sem `compose.yaml`.
+- **Rodar o backend localmente:** depende do banco acima (ou de usar `TestBackendApplication` com Testcontainers; ainda não validado).
+- **Frontend e ferramentas Python:** ainda não criados.
+- **Formatação e análise estática:** ainda não configuradas no build.
+
+### Avisos conhecidos (não bloqueiam)
+
+- Mockito/ByteBuddy avisam sobre carregamento dinâmico de agent no JDK atual; resolver configurando o Mockito como agent no Surefire.
+- `spring.jpa.open-in-view` ligado por padrão; desligar quando a camada web começar.
 
 ## Avisos
 
